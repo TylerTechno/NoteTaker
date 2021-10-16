@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require("fs")
 const uniqid = require("uniqid")
-const database = require("./db/db.json")
+let database = require("./db/db.json")
 const PORT = process.env.port || 3001;
 
 const app = express();
@@ -38,6 +38,18 @@ app.post("/api/notes", (req, res) =>{
 fs.writeFileSync(path.join(__dirname, '/db/db.json'),JSON.stringify(database))
     res.json()
 } )
+
+app.delete("/api/notes/:id", (req, res) => {
+    var id = req.params.id 
+    var filterDb = database.filter(note => {
+        return note.id !== id
+    })
+
+    fs.writeFileSync(path.join(__dirname, '/db/db.json'),JSON.stringify(filterDb))
+    database = filterDb
+    res.json()
+})
+
 
 
 app.listen(PORT, () =>
